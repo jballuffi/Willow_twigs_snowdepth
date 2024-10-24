@@ -21,11 +21,11 @@ nuts[grep("L", Sample), Height := "low"]
 nuts[grep("M", Sample), Height := "medium"]
 nuts[grep("H", Sample), Height := "high"]
 
-#remove random value with no species or height
-nuts <- nuts[!is.na(Species)]
+#take only willow
+nuts <- nuts[Species == "willow"]
 
 #subset to main variables
-justnuts <- nuts[, .(Species, Height, Grid, Loc, CP_F, NDF_F, ADF_F, ADL_F)]
+justnuts <- nuts[, .(Height, Grid, Loc, CP_F, NDF_F, ADF_F, ADL_F)]
 
 #What is not protein or fibre should just be carb
 justnuts[, Carb_F := 100 - (NDF_F + CP_F)]
@@ -56,7 +56,7 @@ justnuts[, Composition := Composition/100]
 #figure to look at difference between height classes
 (allnuts <- 
     ggplot(justnuts)+
-    geom_boxplot(aes(x = Species, y = Composition, fill = Height), alpha = 0.4)+
+    geom_boxplot(aes(x = Height, y = Composition), alpha = 0.4)+
     labs(y = "Composition (%)", x = "Browse height")+
     scale_fill_manual(values = heightcols)+
     theme_minimal()+
@@ -64,19 +64,19 @@ justnuts[, Composition := Composition/100]
 
 
 #look at significant differences between nutritional compositions of different heights
-sig <- justnuts[, lm_out(lm(Composition ~ Height)), by = .(Species, Nutrient)]
+sig <- justnuts[, lm_out(lm(Composition ~ Height)), by = .(Nutrient)]
 
 #min and max of plant compositions
 justnuts[, .(min = min(Composition), max = max(Composition)), by = Nutrient]
 
 #look at compositions by species and height 
-avgnut <- justnuts[, .(Composition = mean(Composition)), by = .(Species, Height, Nutrient)]
+avgnut <- justnuts[, .(Composition = mean(Composition)), by = .(Height, Nutrient)]
 
 #create data table of means, medians, and standard deviations for %CP by species and height
 meanCP <- justnuts[Nutrient == "CP", .(CP_mean = mean(Composition, na.rm = TRUE),
                                      CP_median = median(Composition, na.rm = TRUE),
                                      CP_sd = sd(Composition, na.rm = TRUE)), 
-                 by = .(Species, Height)]
+                 by = .(Height)]
 
 
 
