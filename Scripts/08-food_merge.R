@@ -9,37 +9,28 @@ lapply(dir('R', '*.R', full.names = TRUE), source)
 #data
 startingbiomass <- readRDS("Output/Data/starting_biomass.rds")
 startingnuts <- readRDS("Output/Data/starting_nutrition.rds")
-prop <- readRDS("Output/Data/proportion_available.rds")
+prop <- readRDS("Output/Data/willow_avail_daily.rds")
 
 #change col names in starting nutrients
-setnames(startingnuts, c("Species", "Height"), c("species", "height"))
-
-
-
-# melt the proportion available by species --------------------------------
-
-#melt by species
-prop <- melt.data.table(prop, measure.vars = c("propavail_willow", "propavail_spruce"), 
-                        variable.name = "species", 
-                        value.name = "propavail")
-
-#take only species name from species column
-prop[, species := tstrsplit(species, "_", keep = 2)]
+setnames(startingnuts, "Height", "height")
 
 
 
 # merge in biomass and quality --------------------------------------------------------
 
 #merge in biomass means and proportion available
-biomass <- merge(prop, startingbiomass[, .(species, height, grid, biomass_mean)], 
-                 by = c("grid", "species", "height"), all.x = TRUE)
+biomass <- merge(prop, startingbiomass[, .(height, grid, biomass_mean)], 
+                 by = c("grid", "height"), all.x = TRUE)
 
 #merge in quality to biomass and proportion available
-daily <- merge(biomass, startingnuts[, .(species, height, CP_mean)], 
-               by = c("species", "height"), all.x = TRUE)
+daily <- merge(biomass, startingnuts[, .(height, CP_mean)], 
+               by = c("height"), all.x = TRUE)
 
 #reorder daily values
-daily <- daily[order(Location, Date, species)]
+daily <- daily[order(Location, Date)]
+
+#rename
+setnames(daily, "propavail_willow", "propavail")
 
 #cases where proportion available was greater than one
 daily[propavail > 1, propavail := 1]
@@ -48,7 +39,7 @@ daily[propavail > 1, propavail := 1]
 setnames(daily, "biomass_mean", "biomassstart")
 
 # set your by's, what factors do you want to calculate by
-bys <- c("winter", "grid", "loc", "Date", "species") 
+bys <- c("winter", "grid", "loc", "Date") 
 
 
 # get total available biomass  -------------------------------------
