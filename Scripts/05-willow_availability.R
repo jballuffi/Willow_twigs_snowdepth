@@ -144,7 +144,7 @@ willow[is.na(snow_cat)]
 
 #save the daily measures of avail by camera trap site
 saveRDS(formod, "Output/Data/willow_avail_noduplicates.rds")
-saveRDS(willow, "Output/Data/willow_avail_bysite.rds")
+saveRDS(willow, "Output/Data/willow_avail_daily.rds")
 
 ggsave("Output/Figures/Willowavail_snow_time.jpeg", timetrend, width = 8, height = 8, unit = "in" )
 ggsave("Output/Figures/Willowavail_over_snow.jpeg", propandsnow, width = 8, height = 6, unit = "in" )
