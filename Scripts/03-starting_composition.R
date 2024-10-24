@@ -56,9 +56,9 @@ justnuts[, Composition := Composition/100]
 #figure to look at difference between height classes
 (allnuts <- 
     ggplot(justnuts)+
-    geom_boxplot(aes(x = Height, y = Composition), alpha = 0.4)+
+    geom_boxplot(aes(x = Height, y = Composition, fill = Height), alpha = 0.4)+
     labs(y = "Composition (%)", x = "Browse height")+
-    scale_fill_manual(values = heightcols)+
+    scale_fill_manual(values = heightcols, guide = NULL)+
     theme_minimal()+
     facet_wrap(~ Nutrient, scales = "free"))
 

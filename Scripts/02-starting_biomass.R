@@ -88,7 +88,8 @@ heights[, Height := factor(Height, levels = c("low", "medium", "high"))]
 
 #summary figure showing 
 (summary <- ggplot(heights)+
-  geom_boxplot(aes(x = Height, y = Biomass, fill = Grid), alpha = 0.5, color = "grey30")+
+  geom_boxplot(aes(x = Grid, y = Biomass, fill = Height), alpha = 0.5, color = "grey30")+
+  scale_fill_manual(values = heightcols, guide = NULL)+
   labs(x = "Height class", y = "Available forage (dry g/m2)")+
   theme_minimal())
 
