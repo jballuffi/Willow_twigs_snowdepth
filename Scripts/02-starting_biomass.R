@@ -4,17 +4,19 @@ lapply(dir('R', '*.R', full.names = TRUE), source)
 
 
 source("Scripts/01-allometric_eqn.R")
-dat <- fread("Input/transects.csv")
+biomass <- fread("Input/transects.csv")
 
 #number of transects done
-dat[, length(unique(Loc)), by = Grid]
+biomass[, length(unique(Loc)), by = Grid]
 
+#use only willow
+biomass <- dat[Species == "willow"]
 
 
 # convert to biomass ------------------------------------------------------
 
-#merge transect data with allometric equations
-biomass <- merge(dat, eqn, by.x = "Species", by.y = "species", all.x = TRUE)
+#take just slope
+biomass[, Slope := eqn$Slope]
 
 #calculate biomass from branch BD for each height class
 biomass[, Mass_low := (Slope*BD)*(Low/100)]
@@ -36,7 +38,7 @@ sums <- biomass[, .(low = sum(Mass_low, na.rm = TRUE)/15,
                     med = sum(Mass_med, na.rm = TRUE)/15, 
                     high = sum(Mass_high, na.rm = TRUE)/15, 
                     total = sum(Mass_total, na.rm = TRUE)/15), 
-                by = .(Species, Grid, Loc)]
+                by = .(Grid, Loc)]
 
 
 
@@ -44,16 +46,10 @@ sums <- biomass[, .(low = sum(Mass_low, na.rm = TRUE)/15,
 
 
 #create empty sheet of transects and biomass for cases where there is zero biomass of a species
-emptyspruce <- biomass[, .(Loc = unique(Loc)), by = Grid]
-emptyspruce[, Species := "spruce"]
-
 emptywillow <- biomass[, .(Loc = unique(Loc)), by = Grid]
-emptywillow[, Species := "willow"]
-
-empty <- rbind(emptyspruce, emptywillow)
 
 #merge empty sheet with sums sheet and NAs now appear occassionally in the biomass col
-sums <- merge(empty, sums, by = c("Grid", "Loc", "Species"), all.x = TRUE)
+sums <- merge(emptywillow, sums, by = c("Grid", "Loc"), all.x = TRUE)
 
 #convert NAs to zeros.
 sums[is.na(low), low := 0][is.na(med), med := 0][is.na(high), high := 0][is.na(total), total := 0]
@@ -73,16 +69,16 @@ heights[Height == "med", Height := "medium"]
 # this will be exported to later be merged with nutrition and twig availability data
 avg <- heights[, .(biomass_mean = mean(Biomass),
                    biomass_median = median(Biomass),
-                   biomass_sd = sd(Biomass)), by = .(Species, Height, Grid)]
-names(avg) <- c("species", "height", "grid", "biomass_mean", "biomass_median", "biomass_sd")
+                   biomass_sd = sd(Biomass)), by = .(Height, Grid)]
+names(avg) <- c("height", "grid", "biomass_mean", "biomass_median", "biomass_sd")
 
 #get avg biomass by species and height (not grid)
 #this will be exported to later be merged with twig availability predictive data sets
 #that don't incorporate grid
 avg_nogrid <- heights[, .(biomass_mean = mean(Biomass),
                    biomass_median = median(Biomass),
-                   biomass_sd = sd(Biomass)), by = .(Species, Height)]
-names(avg_nogrid) <- c("species", "height", "biomass_mean", "biomass_median", "biomass_sd")
+                   biomass_sd = sd(Biomass)), by = .(Height)]
+names(avg_nogrid) <- c("height", "biomass_mean", "biomass_median", "biomass_sd")
 
 
 # Figures for biomass -----------------------------------------------------
@@ -94,7 +90,6 @@ heights[, Height := factor(Height, levels = c("low", "medium", "high"))]
 (summary <- ggplot(heights)+
   geom_boxplot(aes(x = Height, y = Biomass, fill = Grid), alpha = 0.5, color = "grey30")+
   labs(x = "Height class", y = "Available forage (dry g/m2)")+
-  facet_wrap(~Species, scales = "free")+
   theme_minimal())
 
 
