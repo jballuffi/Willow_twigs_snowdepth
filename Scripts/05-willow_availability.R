@@ -83,7 +83,7 @@ formod[propavail_willow > 1, propavail_willow := 1]
 
 
 
-# Trends -----------------------------------------------------------------
+# Show availability over time -----------------------------------------------------------------
 
 #get mean proportion available and snow depth by date and height class
 means <- willow[, .(propmean = mean(propavail_willow, na.rm = TRUE),
@@ -118,13 +118,9 @@ means <- means[order(Date)]
 #Combine proportion available and snow depth into one figure
 timetrend <- ggarrange(snowtrend, proptrend, ncol = 1, nrow = 2)
 
-#trend of total proportion available in response to snow depth
-(propandsnow <-
-  ggplot(willow)+
-  geom_point(aes(x = Snow, y = propavail_willow, color = height), alpha = 0.4)+
-  scale_color_manual(values = heightcols)+
-  labs(y = "Proportion of twigs available", x = "Snow depth (cm)")+
-  theme_minimal())
+
+
+# Show availability with snow depth ---------------------------------------
 
 #that figure is tough to follow, try using a boxplot
 #bin snow data
@@ -140,12 +136,11 @@ willow[is.na(snow_cat)]
   theme_minimal())
 
 
+
 # save output data --------------------------------------------------------
 
 #save the daily measures of avail by camera trap site
 saveRDS(formod, "Output/Data/willow_avail_noduplicates.rds")
-saveRDS(willow, "Output/Data/willow_avail_daily.rds")
 
 ggsave("Output/Figures/Willowavail_snow_time.jpeg", timetrend, width = 8, height = 8, unit = "in" )
-ggsave("Output/Figures/Willowavail_over_snow.jpeg", propandsnow, width = 8, height = 6, unit = "in" )
 ggsave("Output/Figures/Willowavail_over_snow_boxplot.jpeg", propandsnowbox, width = 8, height = 6, unit = "in" )
