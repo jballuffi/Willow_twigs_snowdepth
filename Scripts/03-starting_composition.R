@@ -73,16 +73,16 @@ justnuts[, .(min = min(Composition), max = max(Composition)), by = Nutrient]
 avgnut <- justnuts[, .(Composition = mean(Composition)), by = .(Height, Nutrient)]
 
 #create data table of means, medians, and standard deviations for %CP by species and height
-meanCP <- justnuts[Nutrient == "CP", .(CP_mean = mean(Composition, na.rm = TRUE),
-                                     CP_median = median(Composition, na.rm = TRUE),
-                                     CP_sd = sd(Composition, na.rm = TRUE)), 
-                 by = .(Height)]
+means <- justnuts[, .(mean = mean(Composition),
+                      median = median(Composition),
+                      sd = sd(Composition)), 
+                 by = .(Height, Nutrient)]
 
 
 
 # save outputs ------------------------------------------------------------
 
-saveRDS(meanCP, "Output/Data/starting_nutrition.rds")
+saveRDS(means, "Output/Data/starting_nutrition.rds")
 saveRDS(justnuts, "Output/Data/cleaned_compositions.rds")
 ggsave("Output/Figures/composition_by_height.jpeg", allnuts, width = 10, height = 6, unit = "in")
 
