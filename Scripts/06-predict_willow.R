@@ -8,6 +8,8 @@ lapply(dir('R', '*.R', full.names = TRUE), source)
 # read in data ------------------------------------------------------------
 
 willow <- readRDS("Output/Data/willow_avail_noduplicates.rds")
+startingbiomass <- readRDS("Output/Data/starting_biomass_nogrid.rds")
+startingnuts <- readRDS("Output/Data/starting_nutrition.rds")
 
 
 
@@ -34,6 +36,17 @@ modout[, height := factor(height, labels = modnames)]
 
 # figures -----------------------------------------------------------------
 
+#plot using geom smooth GAM
+(willow_gam <- 
+   ggplot(willow)+
+   geom_point(aes(x = Snow, y = propavail_willow), alpha = 0.5, color = "grey50")+
+   geom_smooth(aes(x = Snow, y = propavail_willow, color = height, fill = height), method = "gam")+
+   scale_color_manual(values = heightcols, guide = NULL)+
+   scale_fill_manual(values = heightcols, guide = NULL)+
+   labs(y = "Proportion of twigs available", x = "Snow depth (cm)")+
+   facet_wrap(~ height)+
+   theme_minimal())
+
 (willow_pred <-
   ggplot(modout)+
   geom_ribbon(aes(x = Snow, ymin = lower, ymax = upper), alpha = 0.5, fill = "grey70")+
@@ -43,17 +56,6 @@ modout[, height := factor(height, labels = modnames)]
   facet_wrap(~height)+
   theme_minimal(base_size = 16))
 
-
-#plot using geom smooth GAM
-(willow_gam <- 
-  ggplot(willow)+
-  geom_point(aes(x = Snow, y = propavail_willow), alpha = 0.5, color = "grey50")+
-  geom_smooth(aes(x = Snow, y = propavail_willow, color = height, fill = height), method = "gam")+
-  scale_color_manual(values = heightcols, guide = NULL)+
-  scale_fill_manual(values = heightcols, guide = NULL)+
-  labs(y = "Proportion of twigs available", x = "Snow depth (cm)")+
-  facet_wrap(~ height)+
-  theme_minimal())
 
 
 
