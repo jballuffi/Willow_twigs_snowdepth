@@ -25,39 +25,40 @@ nuts[grep("H", Sample), Height := "high"]
 willow <- nuts[Species == "willow"]
 
 #subset to main variables
-justnuts <- willow[, .(Height, Grid, Loc, CP_F, NDF_F, ADF_F, ADL_F)]
+wide <- willow[, .(Height, Grid, Loc, CP_F, NDF_F, ADF_F, ADL_F)]
 
 #What is not protein or fibre should just be carb
-justnuts[, Carb_F := 100 - (NDF_F + CP_F)]
+wide[, Carb_F := 100 - (NDF_F + CP_F)]
+
+#change name
+setnames(wide, "Height", "height")
+
+#make height class a leveled factor
+wide[, Height := factor(height, levels = c("low", "medium", "high"), ordered = TRUE)]
 
 
 
 # make data long ----------------------------
 
 #create a melted version of nutrient data, melted by nutrient
-justnuts <- melt.data.table(justnuts, measure.vars = c("NDF_F", "ADF_F", "ADL_F", "CP_F", "Carb_F"), variable.name = "Nutrient", value.name = "Percent")
-
-#make height class a leveled factor
-justnuts[, Height := factor(Height, levels = c("low", "medium", "high"), ordered = TRUE)]
+long <- melt.data.table(wide, measure.vars = c("NDF_F", "ADF_F", "ADL_F", "CP_F", "Carb_F"), variable.name = "Nutrient", value.name = "Percent")
 
 #rename nutrients for figures
-justnuts[, Nutrient := gsub("_F", "", Nutrient)]
+long[, Nutrient := gsub("_F", "", Nutrient)]
 
 #remove NAs
-justnuts <- justnuts[!is.na(Percent)]
+long <- long[!is.na(Percent)]
 
 #make proportion
-justnuts[, Composition := Percent/100]
+long[, Composition := Percent/100]
 
-#change name
-setnames(justnuts, "Height", "height")
 
 
 # Summarize data  ------------------------------
 
 #figure to look at difference between height classes
 (allnuts <- 
-    ggplot(justnuts)+
+    ggplot(long)+
     geom_boxplot(aes(x = height, y = Percent, fill = height), alpha = 0.4)+
     labs(y = "Composition (%)", x = "Browse height")+
     scale_fill_manual(values = heightcols, guide = NULL)+
@@ -66,26 +67,32 @@ setnames(justnuts, "Height", "height")
 
 
 #look at significant differences between nutritional compositions of different heights
-carbmod <- lm(Percent ~ height, data = justnuts[Nutrient == "Carb"])
-cpmod <- lm(Percent ~ height, data = justnuts[Nutrient == "CP"])
+carbmod <- lm(Percent ~ height, data = long[Nutrient == "Carb"])
+cpmod <- lm(Percent ~ height, data = long[Nutrient == "CP"])
 
 #min and max of plant compositions
-justnuts[, .(min = min(Percent), max = max(Percent)), by = Nutrient]
+long[, .(min = min(Percent), max = max(Percent)), by = Nutrient]
 
 
 
 # Get final summary by height class ---------------------------------------
 
 #create data table of means, medians, and standard deviations for %CP by species and height
-means <- justnuts[, .(mean = mean(Composition),
+meanslong <- long[, .(mean = mean(Composition),
                       median = median(Composition),
                       sd = sd(Composition)), 
                  by = .(height, Nutrient)]
 
 
+meanswide <- wide[, .(mean_cp = mean(CP_F, na.rm = TRUE),
+                      mean_carb = mean(Carb_F, na.rm = TRUE),
+                      mean_ndf = mean(NDF_F, na.rm = TRUE)),
+                  height]
+
 # save outputs ------------------------------------------------------------
 
-saveRDS(means, "Output/Data/starting_nutrition.rds")
-saveRDS(justnuts, "Output/Data/cleaned_compositions.rds")
+saveRDS(meanslong, "Output/Data/starting_nutrition_long.rds")
+saveRDS(meanswide, "Output/Data/starting_nutrition_wide.rds")
+saveRDS(long, "Output/Data/cleaned_compositions.rds")
 ggsave("Output/Figures/composition_by_height.jpeg", allnuts, width = 10, height = 6, unit = "in")
 
