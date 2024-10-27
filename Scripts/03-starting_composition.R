@@ -65,11 +65,6 @@ long[, Composition := Percent/100]
     theme_minimal()+
     facet_wrap(~ Nutrient, scales = "free"))
 
-
-#look at significant differences between nutritional compositions of different heights
-carbmod <- lm(Percent ~ height, data = long[Nutrient == "Carb"])
-cpmod <- lm(Percent ~ height, data = long[Nutrient == "CP"])
-
 #min and max of plant compositions
 long[, .(min = min(Percent), max = max(Percent)), by = Nutrient]
 
@@ -84,9 +79,9 @@ meanslong <- long[, .(mean = mean(Composition),
                  by = .(height, Nutrient)]
 
 
-meanswide <- wide[, .(mean_cp = mean(CP_F, na.rm = TRUE),
-                      mean_carb = mean(Carb_F, na.rm = TRUE),
-                      mean_ndf = mean(NDF_F, na.rm = TRUE)),
+meanswide <- wide[, .(mean_cp = mean(CP_F/100, na.rm = TRUE),
+                      mean_carb = mean(Carb_F/100, na.rm = TRUE),
+                      mean_ndf = mean(NDF_F/100, na.rm = TRUE)),
                   height]
 
 # save outputs ------------------------------------------------------------
