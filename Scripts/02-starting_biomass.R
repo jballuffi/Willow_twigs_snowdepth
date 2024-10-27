@@ -7,10 +7,14 @@ source("Scripts/01-allometric_eqn.R")
 biomass <- fread("Input/transects.csv")
 
 #number of transects done
-biomass[, length(unique(Loc)), by = Grid]
+biomass[, length(unique(Loc)), Grid]
+
+#number of lines done
+biomass[, line := tstrsplit(Loc, "_", keep = 1)]
+biomass[, length(unique(line)), Grid]
 
 #use only willow
-biomass <- dat[Species == "willow"]
+biomass <- biomass[Species == "willow"]
 
 
 # convert to biomass ------------------------------------------------------
@@ -23,14 +27,13 @@ biomass[, Mass_low := (Slope*BD)*(Low/100)]
 biomass[, Mass_med := (Slope*BD)*(Med/100)]
 biomass[, Mass_high := (Slope*BD)*(High/100)]
 
-#calculate biomass from branch BD for all height classes combined
-biomass[, Mass_total := Slope*BD]
-
 #replace is.na with zeros
 biomass[is.na(Mass_low), Mass_low := 0]
 biomass[is.na(Mass_med), Mass_med := 0]
 biomass[is.na(Mass_high), Mass_high := 0]
-biomass[is.na(Mass_total), Mass_total := 0]
+
+#calculate biomass from branch BD for all height classes combined
+biomass[, Mass_total := Mass_low + Mass_med + Mass_high]
 
 #sum biomass per transect then divide by size of transect (15 m2)
 #final unit is g/m2
