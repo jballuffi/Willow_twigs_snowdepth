@@ -49,6 +49,8 @@ justnuts <- justnuts[!is.na(Percent)]
 #make proportion
 justnuts[, Composition := Percent/100]
 
+#change name
+setnames(justnuts, "Height", "height")
 
 
 # Summarize data  ------------------------------
@@ -56,16 +58,16 @@ justnuts[, Composition := Percent/100]
 #figure to look at difference between height classes
 (allnuts <- 
     ggplot(justnuts)+
-    geom_boxplot(aes(x = Height, y = Percent, fill = Height), alpha = 0.4)+
+    geom_boxplot(aes(x = height, y = Percent, fill = height), alpha = 0.4)+
     labs(y = "Composition (%)", x = "Browse height")+
     scale_fill_manual(values = heightcols, guide = NULL)+
     theme_minimal()+
-    facet_wrap(~ Nujustnuts[Nutrient == "CP"]trient, scales = "free"))
+    facet_wrap(~ Nutrient, scales = "free"))
 
 
 #look at significant differences between nutritional compositions of different heights
-carbmod <- lm(Percent ~ Height, data = justnuts[Nutrient == "Carb"])
-cpmod <- lm(Percent ~ Height, data = justnuts[Nutrient == "CP"])
+carbmod <- lm(Percent ~ height, data = justnuts[Nutrient == "Carb"])
+cpmod <- lm(Percent ~ height, data = justnuts[Nutrient == "CP"])
 
 #min and max of plant compositions
 justnuts[, .(min = min(Percent), max = max(Percent)), by = Nutrient]
@@ -78,8 +80,7 @@ justnuts[, .(min = min(Percent), max = max(Percent)), by = Nutrient]
 means <- justnuts[, .(mean = mean(Composition),
                       median = median(Composition),
                       sd = sd(Composition)), 
-                 by = .(Height, Nutrient)]
-
+                 by = .(height, Nutrient)]
 
 
 # save outputs ------------------------------------------------------------
