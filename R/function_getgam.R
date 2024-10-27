@@ -1,6 +1,7 @@
 
-#function to make gam and build predictions
-#But doesn't work right now
+#function to build predictions from GAMs 
+#feed it one GAM object, create a predction for snow depth from 0 - 100 cm
+#uses predict() fnction, output is predicted value and lower and upper limits
 
 getgam <- function(mod){
   
