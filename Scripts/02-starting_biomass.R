@@ -95,5 +95,5 @@ avg_nogrid <- heights[, .(biomass_mean = mean(Biomass),
 # save outputs ------------------------------------------------------------
 
 saveRDS(heights, "Output/Data/cleaned_biomass.rds")
-saveRDS(avg_nogrid, "Output/Data/starting_biomass_nogrid.rds")
+saveRDS(avg_nogrid, "Output/Data/starting_biomass_means.rds")
 ggsave("Output/Figures/sum_starting_biomass.jpeg", summary, width = 7, height = 5, unit = "in")
