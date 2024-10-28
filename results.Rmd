@@ -7,24 +7,17 @@ output: word_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+library(data.table)
+
+biomass <- readRDS("Output/Data/cleaned_biomass.rds")
+comps <- readRDS("Output/Data/cleaned_compositions.rds")
+cams <- readRDS("Output/Data/camtraps.rds")
+
+
 ```
 
-## R Markdown
+## Summary of starting biomass and compositions
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+Transect data on average found starting willow biomass to increase with height class with average availabilities being `r biomass[height == "low", round(mean(Biomass), 1)]`, `r biomass[height == "medium", round(mean(Biomass), 1)]`, and `r biomass[height == "high", round(mean(Biomass), 1)]` g for the low, medium, and high heights, respectively.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
-```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
