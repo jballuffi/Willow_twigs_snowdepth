@@ -34,8 +34,8 @@ mods <- list(lowgam, medgam, highgam)
 modnames <- c("low", "medium", "high")
 
 #use lapply to apply the getgam function (R/ folder) to these models
-#getgam function makes a predictive dataset for snow depths 0 - 100 cm for each gam
-modoutlist <- lapply(mods, getgam)
+#getgam function makes a predictive dataset for snow depths 0 - 90 cm for each gam
+modoutlist <- lapply(mods, predsnowgam)
 
 #rbind all the GAM predictions into one data table
 modout <- rbindlist(modoutlist, idcol = "height")

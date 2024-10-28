@@ -3,7 +3,7 @@
 #feed it one GAM object, create a predction for snow depth from 0 - 100 cm
 #uses predict() fnction, output is predicted value and lower and upper limits
 
-getgam <- function(mod){
+predsnowgam <- function(mod){
   
   #create new dataframe for prediction
   newdat <- data.table(Snow = seq(0, 90))
