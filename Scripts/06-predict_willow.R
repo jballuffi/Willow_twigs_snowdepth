@@ -117,7 +117,7 @@ food_pred <- food_pred[order(Snow)]
   geom_ribbon(aes(x = Snow, ymin = prop_lower, ymax = prop_upper), alpha = 0.5, fill = "grey70", data = pred)+
   geom_path(aes(x = Snow, y = prop, color = height), linewidth = .75, data = pred)+
   scale_color_manual(values = heightcols, guide = NULL)+
-  labs(x = "Snow depth (cm)", y = "Predicted twig availablity")+
+  labs(x = "Snow depth (cm)", y = "Proportion of twigs available")+
   facet_wrap(~height)+
   theme_minimal(base_size = 16))
 
@@ -150,6 +150,5 @@ fullplot <- ggarrange(biomassplot, CPplot, Carbplot, ncol = 1, nrow = 3)
 # save predictions --------------------------------------------------------
 
 saveRDS(modout, "Output/Data/willow_avail_prediction.rds")
-ggsave("Output/Figures/Willow_avail_gam.jpeg", willow_gam, width = 9, height = 5, unit = "in")
-ggsave("Output/Figures/Willow_avail_pred.jpeg", willow_pred, width = 9, height = 4, unit = "in")
+ggsave("Output/Figures/Willow_avail_predjpeg", willow_pred, width = 9, height = 5, unit = "in")
 ggsave("Output/Figures/Total_food_avail.jpeg", fullplot, width = 5, height = 10, unit = "in")
