@@ -92,6 +92,7 @@ avg_nogrid <- heights[, .(biomass_mean = mean(Biomass),
   theme_minimal())
 
 
+
 # save outputs ------------------------------------------------------------
 
 saveRDS(heights, "Output/Data/cleaned_biomass.rds")
