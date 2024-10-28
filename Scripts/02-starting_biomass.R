@@ -68,30 +68,25 @@ heights <- melt.data.table(sums, measure.vars = c("low", "med", "high"),
 
 heights[Height == "med", Height := "medium"]
 
-#take average biomass by species, height, and grid
-# this will be exported to later be merged with nutrition and twig availability data
-avg <- heights[, .(biomass_mean = mean(Biomass),
-                   biomass_median = median(Biomass),
-                   biomass_sd = sd(Biomass)), by = .(Height, Grid)]
-names(avg) <- c("height", "grid", "biomass_mean", "biomass_median", "biomass_sd")
+#set height to leveled factor
+heights[, height := factor(Height, levels = c("low", "medium", "high"))]
+
 
 #get avg biomass by species and height (not grid)
 #this will be exported to later be merged with twig availability predictive data sets
 #that don't incorporate grid
 avg_nogrid <- heights[, .(biomass_mean = mean(Biomass),
                    biomass_median = median(Biomass),
-                   biomass_sd = sd(Biomass)), by = .(Height)]
-names(avg_nogrid) <- c("height", "biomass_mean", "biomass_median", "biomass_sd")
+                   biomass_sd = sd(Biomass)), by = .(height)]
+
+
 
 
 # Figures for biomass -----------------------------------------------------
 
-#set height to leveled factor
-heights[, Height := factor(Height, levels = c("low", "medium", "high"))]
-
 #summary figure showing 
 (summary <- ggplot(heights)+
-  geom_boxplot(aes(x = Grid, y = Biomass, fill = Height), alpha = 0.5, color = "grey30")+
+  geom_boxplot(aes(x = Grid, y = Biomass, fill = height), alpha = 0.5, color = "grey30")+
   scale_fill_manual(values = heightcols, guide = NULL)+
   labs(x = "Height class", y = "Available forage (dry g/m2)")+
   theme_minimal())
@@ -99,6 +94,6 @@ heights[, Height := factor(Height, levels = c("low", "medium", "high"))]
 
 # save outputs ------------------------------------------------------------
 
+saveRDS(heights, "Output/Data/cleaned_biomass.rds")
 saveRDS(avg_nogrid, "Output/Data/starting_biomass_nogrid.rds")
-saveRDS(avg, "Output/Data/starting_biomass.rds")
 ggsave("Output/Figures/sum_starting_biomass.jpeg", summary, width = 7, height = 5, unit = "in")
