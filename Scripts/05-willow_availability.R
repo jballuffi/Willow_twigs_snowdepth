@@ -139,8 +139,11 @@ willow[is.na(snow_cat)]
 
 # save output data --------------------------------------------------------
 
-#save the daily measures of avail by camera trap site
+#save the daily measures, with replicates removed of availability by camera trap site
 saveRDS(formod, "Output/Data/willow_avail_noduplicates.rds")
+
+#save daily means for twig and snow data that was used for time figure
+saveRDS(means, "Output/Data/daily_meanavail_allgrids.rds")
 
 ggsave("Output/Figures/Willowavail_snow_time.jpeg", timetrend, width = 8, height = 8, unit = "in" )
 ggsave("Output/Figures/Willowavail_over_snow_boxplot.jpeg", propandsnowbox, width = 8, height = 6, unit = "in" )
