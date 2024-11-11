@@ -10,14 +10,63 @@ knitr::opts_chunk$set(echo = TRUE)
 
 library(data.table)
 
+#read in data 
 biomass <- readRDS("Output/Data/cleaned_biomass.rds")
 comps <- readRDS("Output/Data/cleaned_compositions.rds")
 cams <- readRDS("Output/Data/camtraps.rds")
+means <- readRDS("Output/Data/daily_meanavail_allgrids.rds")
 
+### first section 
+
+biomassmod <- lm(Biomass ~ height, biomass)
+biomassanova <- anova(biomassmod)
+biomasspval <- round(biomassanova$`Pr(>F)`[1], 2)
+
+cpanova <- anova(lm(Percent ~ height, comps[Nutrient == "CP"]))
+cppval <- round(cpanova$`Pr(>F)`[1], 2)
+
+ndfmod <- lm(Percent ~ height, comps[Nutrient == "NDF"])
+ndfanova <- anova(ndfmod)
+ndfpval <- round(ndfanova$`Pr(>F)`[1], 2)
+
+carbanova <- anova(lm(Percent ~ height, comps[Nutrient == "Carb"]))
+carbpval <- round(carbanova$`Pr(>F)`[1], 2)
+carbh <- comps[Nutrient == "Carb" & height == "high", round(mean(Percent), 1)]
+carbl <- comps[Nutrient == "Carb" & height == "low", round(mean(Percent), 1)]
+
+adfanova <- anova(lm(Percent ~ height, comps[Nutrient == "ADF"]))
+adfpval <- round(adfanova$`Pr(>F)`[1], 2)
+adfh <- comps[Nutrient == "ADF" & height == "high", round(mean(Percent), 1)]
+adfl <- comps[Nutrient == "ADF" & height == "low", round(mean(Percent), 1)]
+
+adlanova <- anova(lm(Percent ~ height, comps[Nutrient == "ADL"]))
+adlpval <- round(adlanova$`Pr(>F)`[1], 2)
+adlh <- comps[Nutrient == "ADL" & height == "high", round(mean(Percent), 1)]
+adll <- comps[Nutrient == "ADL" & height == "low", round(mean(Percent), 1)]
+
+
+### Second section
+
+max2223 <- means[winter == "2022-2023", max(snowmean)]
+maxday22 <- means[winter == "2022-2023" & snowmean == max2223, mean(Date)]
+
+max2324 <- means[winter == "2023-2024", max(snowmean)]
+maxday23 <- means[winter == "2023-2024" & snowmean == max2324, mean(Date)]
 
 ```
 
-## Summary of starting biomass and compositions
+## Starting biomass and compositions
 
-Transect data on average found starting willow biomass to increase with height class with average availabilities being `r biomass[height == "low", round(mean(Biomass), 1)]`, `r biomass[height == "medium", round(mean(Biomass), 1)]`, and `r biomass[height == "high", round(mean(Biomass), 1)]` g for the low, medium, and high heights, respectively.
+Transect data on average found starting willow biomass to increase with height (P = `r biomasspval`) class with average availability being `r biomass[height == "low", round(mean(Biomass), 1)]`, `r biomass[height == "medium", round(mean(Biomass), 1)]`, and `r biomass[height == "high", round(mean(Biomass), 1)]` g for the low, medium, and high heights, respectively. 
 
+Willow twigs were an average of `r comps[Nutrient == "CP", round(mean(Percent), 1)]`% CP and `r comps[Nutrient == "NDF", round(mean(Percent), 1)]`% NDF, with a remainder of `r comps[Nutrient == "Carb", round(mean(Percent, 1))]`% non-fiber carbohydrate. Within fibre, willow had an average composition of `r comps[Nutrient == "ADF", round(mean(Percent, 1))]`% ADF and `r comps[Nutrient == "ADL", round(mean(Percent, 1))]`% ADL.
+
+CP composition did not vary between heights (P = `r cppval`). NDF decreased with willow height (P = `r ndfpval`) from `r comps[Nutrient == "NDF" & height == "low", round(mean(Percent), 1)]`% observed in the low height class to `r comps[Nutrient == "NDF" & height == "high", round(mean(Percent), 2)]`% in the high height class. As a result, carbohydrate composition also increased `rcarbh - carbh`% from low to high height class (P = `r carbpval`). ADF slightly decreased, with a change of `r adfl - adfh`% from low to high height class (P = `r adfpval`), while ADL increased `r adlh - adll`% (P = `r adlpval`).
+
+
+## Snow depth and twig availability over winter
+
+The maximum snow depth recorded was `r cams[, max(Snow, na.rm = TRUE)]` cm in both winters. Maximum snow depth was reached on `r maxday22` in 2022-2023 and `r maxday23` in 2023-2024. Low twigs remained 100% available until snow began to accumulate, after which medium twigs became available followed by high twigs. The maximum availability, based on daily averages, was `r means[height == "medium", round(max(propmean, na.rm = TRUE), 2)*100]`% and `r means[height == "high", round(max(propmean, na.rm = TRUE), 2)*100]`% for medium and high twigs, respectively. Low twigs became completely unavailable as winter progressed, while medium twigs became the most available proportion-wise. High twigs showed the least variation in availability, always remaining relatively less available over winter relative to other height classes.
+
+
+## Twig and nutrient availability in relation to snow depth
