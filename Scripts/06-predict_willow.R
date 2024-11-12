@@ -150,5 +150,5 @@ fullplot <- ggarrange(biomassplot, CPplot, Carbplot, ncol = 1, nrow = 3)
 # save predictions --------------------------------------------------------
 
 saveRDS(modout, "Output/Data/willow_avail_prediction.rds")
-ggsave("Output/Figures/Willow_avail_pred.jpeg", willow_pred, width = 5, height = 9, unit = "in")
+ggsave("Output/Figures/Willow_avail_pred.jpeg", willow_pred, width = 5, height = 10, unit = "in")
 ggsave("Output/Figures/Total_food_avail.jpeg", fullplot, width = 5, height = 10, unit = "in")
