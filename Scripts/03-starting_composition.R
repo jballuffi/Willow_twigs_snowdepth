@@ -63,7 +63,7 @@ long[, Composition := Percent/100]
     labs(y = "Composition (%)", x = "Browse height")+
     scale_fill_manual(values = heightcols, guide = NULL)+
     themepoints+
-    facet_wrap(~ Nutrient, scales = "free"))
+    facet_wrap(~ Nutrient, scales = "free", dir = "v"))
 
 #min and max of plant compositions
 long[, .(min = min(Percent), max = max(Percent)), by = Nutrient]
@@ -89,5 +89,5 @@ meanswide <- wide[, .(mean_cp = mean(CP_F/100, na.rm = TRUE),
 saveRDS(meanslong, "Output/Data/starting_nutrition_long.rds")
 saveRDS(meanswide, "Output/Data/starting_nutrition_wide.rds")
 saveRDS(long, "Output/Data/cleaned_compositions.rds")
-ggsave("Output/Figures/composition_by_height.jpeg", allnuts, width = 10, height = 6, unit = "in")
+ggsave("Output/Figures/composition_by_height.jpeg", allnuts, width = 6, height = 10, unit = "in")
 
