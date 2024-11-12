@@ -104,7 +104,7 @@ means <- means[order(Date)]
     scale_color_manual(values = heightcols)+
     scale_fill_manual(values = heightcols)+
     facet_wrap(~winter, scales = "free")+
-    theme_minimal())
+    themepoints)
 
 #snow depth over time
 (snowtrend <- 
@@ -113,7 +113,7 @@ means <- means[order(Date)]
   geom_path(aes(x = Date, y = snowmean), linewidth = 1)+
   labs(y = "Snow depth (cm)", x = "Date")+
   facet_wrap(~winter, scales = "free")+
-  theme_minimal())
+  themepoints)
 
 #Combine proportion available and snow depth into one figure
 timetrend <- ggarrange(snowtrend, proptrend, ncol = 1, nrow = 2)
@@ -133,7 +133,7 @@ willow[is.na(snow_cat)]
   geom_boxplot(aes(x = snow_cat, y = propavail_willow, fill = height), color = "grey20", alpha = 0.5, outlier.shape = NA)+
   scale_fill_manual(values = heightcols)+
   labs(y = "Proportion of twigs available", x = "Snow depth bins (cm)")+
-  theme_minimal())
+  themepoints)
 
 
 

@@ -62,7 +62,7 @@ long[, Composition := Percent/100]
     geom_boxplot(aes(x = height, y = Percent, fill = height), alpha = 0.4)+
     labs(y = "Composition (%)", x = "Browse height")+
     scale_fill_manual(values = heightcols, guide = NULL)+
-    theme_minimal()+
+    themepoints+
     facet_wrap(~ Nutrient, scales = "free"))
 
 #min and max of plant compositions

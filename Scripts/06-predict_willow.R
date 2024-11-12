@@ -8,7 +8,7 @@ lapply(dir('R', '*.R', full.names = TRUE), source)
 # read in data ------------------------------------------------------------
 
 willow <- readRDS("Output/Data/willow_avail_noduplicates.rds")
-startingbiomass <- readRDS("Output/Data/starting_biomass_nogrid.rds")
+startingbiomass <- readRDS("Output/Data/starting_biomass_means.rds")
 startingnuts <- readRDS("Output/Data/starting_nutrition_wide.rds")
 
 
@@ -118,29 +118,29 @@ food_pred <- food_pred[order(Snow)]
   geom_path(aes(x = Snow, y = prop, color = height), linewidth = .75, data = pred)+
   scale_color_manual(values = heightcols, guide = NULL)+
   labs(x = "Snow depth (cm)", y = "Proportion of twigs available")+
-  facet_wrap(~height)+
-  theme_minimal(base_size = 16))
+  facet_wrap(~height, dir = "v")+
+  themepoints)
 
 (biomassplot <- 
     ggplot(food_pred)+
     geom_ribbon(aes(x = Snow, ymin = biomassavail_lower, ymax = biomassavail_upper), alpha = 0.3, color = "grey")+
     geom_line(aes(x = Snow, y = biomassavail))+
     labs(x = "", y = "Available biomass (g/m2)")+
-    theme_minimal())
+    themepoints)
 
 (CPplot<- 
     ggplot(food_pred)+
     geom_ribbon(aes(x = Snow, ymin = CPavail_comp_lower, ymax = CPavail_comp_upper), alpha = 0.3, color = "grey")+
     geom_line(aes(x = Snow, y = CPavail_comp))+
     labs(x = "Snow depth (cm)", y = "Available CP (%)")+
-    theme_minimal())
+    themepoints)
 
 (Carbplot<- 
     ggplot(food_pred)+
     geom_ribbon(aes(x = Snow, ymin = carbavail_comp_lower, ymax = carbavail_comp_upper), alpha = 0.3, color = "grey")+
     geom_path(aes(x = Snow, y = carbavail_comp))+
     labs(x = "Snow depth (cm)", y = "Available Carbohydrate (%)")+
-    theme_minimal())
+    themepoints)
 
 
 fullplot <- ggarrange(biomassplot, CPplot, Carbplot, ncol = 1, nrow = 3)
@@ -150,5 +150,5 @@ fullplot <- ggarrange(biomassplot, CPplot, Carbplot, ncol = 1, nrow = 3)
 # save predictions --------------------------------------------------------
 
 saveRDS(modout, "Output/Data/willow_avail_prediction.rds")
-ggsave("Output/Figures/Willow_avail_predjpeg", willow_pred, width = 9, height = 5, unit = "in")
+ggsave("Output/Figures/Willow_avail_pred.jpeg", willow_pred, width = 5, height = 9, unit = "in")
 ggsave("Output/Figures/Total_food_avail.jpeg", fullplot, width = 5, height = 10, unit = "in")
