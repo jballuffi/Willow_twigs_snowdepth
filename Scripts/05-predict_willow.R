@@ -166,6 +166,7 @@ food_pred <- food_pred[order(Snow)]
     geom_ribbon(aes(x = Snow, ymin = CPavail_comp_lower, ymax = CPavail_comp_upper), alpha = 0.3, color = "grey")+
     geom_line(aes(x = Snow, y = CPavail_comp))+
     labs(x = "Snow depth (cm)", y = "Available CP (%)")+
+    ylim(0, 8)+
     themepoints)
 
 (Carbplot<- 
@@ -173,10 +174,11 @@ food_pred <- food_pred[order(Snow)]
     geom_ribbon(aes(x = Snow, ymin = carbavail_comp_lower, ymax = carbavail_comp_upper), alpha = 0.3, color = "grey")+
     geom_path(aes(x = Snow, y = carbavail_comp))+
     labs(x = "Snow depth (cm)", y = "Available Carbohydrate (%)")+
+    ylim(37, 45)+
     themepoints)
 
 
-fullplot <- ggarrange(biomassplot, CPplot, Carbplot, ncol = 1, nrow = 3)
+fullplot <- ggarrange(biomassplot, Carbplot, ncol = 1, nrow = 2)
 
 
 
@@ -185,4 +187,4 @@ fullplot <- ggarrange(biomassplot, CPplot, Carbplot, ncol = 1, nrow = 3)
 saveRDS(modout, "Output/Data/willow_avail_prediction.rds")
 write.csv(summarytable, "Output/Tables/GAM_output_table.rds")
 ggsave("Output/Figures/Willow_avail_pred.jpeg", willow_pred, width = 5, height = 10, unit = "in")
-ggsave("Output/Figures/Total_food_avail.jpeg", fullplot, width = 5, height = 10, unit = "in")
+ggsave("Output/Figures/Total_food_avail.jpeg", fullplot, width = 5, height = 8, unit = "in")
