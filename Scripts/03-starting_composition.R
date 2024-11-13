@@ -34,7 +34,7 @@ wide[, Carb_F := 100 - (NDF_F + CP_F)]
 setnames(wide, "Height", "height")
 
 #make height class a leveled factor
-wide[, Height := factor(height, levels = c("low", "medium", "high"), ordered = TRUE)]
+wide[, height := factor(height, levels = c("low", "medium", "high"), ordered = TRUE)]
 
 
 
