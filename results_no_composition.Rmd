@@ -1,0 +1,40 @@
+---
+title: "results"
+author: "Juliana Balluffi-Fry"
+date: "2024-10-28"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(data.table)
+
+#read in data 
+biomass <- readRDS("Output/Data/cleaned_biomass.rds")
+cams <- readRDS("Output/Data/camtraps.rds")
+means <- readRDS("Output/Data/daily_meanavail_allgrids.rds")
+
+### first section 
+
+biomassmod <- lm(Biomass ~ height, biomass)
+biomassanova <- anova(biomassmod)
+biomasspval <- round(biomassanova$`Pr(>F)`[1], 2)
+
+max2223 <- means[winter == "2022-2023", max(snowmean)]
+maxday22 <- means[winter == "2022-2023" & snowmean == max2223, mean(Date)]
+
+max2324 <- means[winter == "2023-2024", max(snowmean)]
+maxday23 <- means[winter == "2023-2024" & snowmean == max2324, mean(Date)]
+
+```
+
+
+## Snow depth and twig availability over winter
+
+Transect data on average found starting willow biomass to increase with height (P = `r biomasspval`) class with average availability being `r biomass[height == "low", round(mean(Biomass), 1)]`, `r biomass[height == "medium", round(mean(Biomass), 1)]`, and `r biomass[height == "high", round(mean(Biomass), 1)]` g for the low, medium, and high heights, respectively. The maximum snow depth recorded was `r cams[, max(Snow, na.rm = TRUE)]` cm in both winters. Maximum snow depth was reached on `r maxday22` in 2022-2023 and `r maxday23` in 2023-2024. Low twigs remained 100% available until snow began to accumulate, after which medium twigs became available followed by high twigs. The maximum availability, based on daily averages, was `r means[height == "medium", round(max(propmean, na.rm = TRUE), 2)*100]`% and `r means[height == "high", round(max(propmean, na.rm = TRUE), 2)*100]`% for medium and high twigs, respectively. Low twigs became completely unavailable as winter progressed, while medium twigs became the most available proportion-wise. High twigs showed the least variation in availability, always remaining relatively less available over winter relative to other height classes.
+
+
+## Twig and nutrient availability in relation to snow depth
+
+GAMs that modeled willow availability in response to snow depth found that low twigs decreased exponentially with snow, as expected, becoming 0% available at roughly 50 cm of snow, or the maximum height of the low twig category. Medium twigs showed an inverted, quadratic response, increasing in availability up to 30 cm of snow, after which availability decreased until they became nearly 0% available after around 75 cm of snow. The availability of high twigs was the most difficult to predict. These branches were easily pushed down by snow, and then covered quickly as snow continued to accumulate. As snow melted, they would become temporarily available for a few days before springing back up when enough snow melted. As a result, high twigs rarely surpassed 50% in availability.
