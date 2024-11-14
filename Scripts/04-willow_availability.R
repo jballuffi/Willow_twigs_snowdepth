@@ -95,25 +95,25 @@ means <- willow[, .(propmean = mean(propavail_willow, na.rm = TRUE),
 #order by date for path plots
 means <- means[order(Date)]
 
+#snow depth over time
+(snowtrend <- 
+    ggplot(means)+
+    geom_ribbon(aes(x = Date, ymin = snowmean - snowsd, ymax = snowmean + snowsd), alpha = 0.2)+
+    geom_path(aes(x = Date, y = snowmean), linewidth = 1)+
+    labs(y = "Snow depth (cm)", x = "Date", title = "A)")+
+    facet_wrap(~winter, scales = "free")+
+    themepoints)
+
 #proportion available for each height over time
 (proptrend <- 
   ggplot(means)+
     geom_ribbon(aes(x = Date, ymax = propmean + propsd, ymin = propmean - propsd, fill = height), alpha = 0.2)+
     geom_path(aes(x = Date, y = propmean, group = height, color = height), linewidth = 1)+
-    labs(y = "Proportion of twigs available", x = "Date")+
+    labs(y = "Proportion of twigs available (PTA)", x = "Date", title = "B)")+
     scale_color_manual(values = heightcols)+
     scale_fill_manual(values = heightcols)+
     facet_wrap(~winter, scales = "free")+
     themepoints)
-
-#snow depth over time
-(snowtrend <- 
-  ggplot(means)+
-  geom_ribbon(aes(x = Date, ymin = snowmean - snowsd, ymax = snowmean + snowsd), alpha = 0.2)+
-  geom_path(aes(x = Date, y = snowmean), linewidth = 1)+
-  labs(y = "Snow depth (cm)", x = "Date")+
-  facet_wrap(~winter, scales = "free")+
-  themepoints)
 
 #Combine proportion available and snow depth into one figure
 timetrend <- ggarrange(snowtrend, proptrend, ncol = 1, nrow = 2)
