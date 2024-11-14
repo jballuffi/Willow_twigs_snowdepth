@@ -78,5 +78,5 @@ camtwigs <- cams[, .(Location, winter, Date, Time, Moon, Temp, Snow, `1_orange`,
 
 # save --------------------------------------------------------------------
 
-saveRDS(camtwigs, "Output/Data/camtraps.rds")
+saveRDS(camtwigs, "Output/Data/03_camtraps.rds")
 
