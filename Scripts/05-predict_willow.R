@@ -7,9 +7,8 @@ lapply(dir('R', '*.R', full.names = TRUE), source)
 
 # read in data ------------------------------------------------------------
 
-willow <- readRDS("Output/Data/willow_avail_noduplicates.rds")
-startingbiomass <- readRDS("Output/Data/starting_biomass_means.rds")
-startingnuts <- readRDS("Output/Data/starting_nutrition_wide.rds")
+willow <- readRDS("Output/Data/04_willow_avail_noduplicates.rds")
+startingbiomass <- readRDS("Output/Data/02_starting_biomass_means.rds")
 
 
 
@@ -80,11 +79,8 @@ modout[, height := factor(height, labels = modnames)]
 
 # Merge with biomass and quality ------------------------------------------
 
-#merge model prediction with wide nutrient summary by height
-pred <- merge(modout, startingnuts, by = "height", all.x = TRUE)
-
 #merge model prediction with biomass summary by height
-pred <- merge(pred, startingbiomass, by = "height", all.x = TRUE)
+pred <- merge(modout, startingbiomass, by = "height", all.x = TRUE)
 
 #change col names
 setnames(pred, c("pred", "lower", "upper"), c("prop", "prop_lower", "prop_upper"))
@@ -95,47 +91,17 @@ pred[, height := factor(height, levels = c("low", "medium", "high"))]
 
 # calculate available biomass and nutrients -------------------------------
 
-#NA for %cp when biomass is gone
-
-
 #get total available biomass for each height and snow depth
 pred[, biomassavail := biomass_mean*prop]
 pred[, biomassavail_lower := biomass_mean*prop_lower]
 pred[, biomassavail_upper := biomass_mean*prop_upper]
 
-#calculate the grams of CP in each height class (Biomass x avg CP composition)
-pred[, CPavail_grams := biomassavail*mean_cp]
-pred[, CPavail_grams_lower := biomassavail_lower*mean_cp]
-pred[, CPavail_grams_upper := biomassavail_upper*mean_cp]
-
-#calc grams of carbs avail
-pred[, carbavail_grams := biomassavail*mean_carb]
-pred[, carbavail_grams_lower := biomassavail_lower*mean_carb]
-pred[, carbavail_grams_upper := biomassavail_upper*mean_carb]
-
 #new data set that sums biomass and CP grams for all heights
 food_pred <- pred[, .(biomassavail = sum(biomassavail),
                       biomassavail_lower = sum(biomassavail_lower),
                       biomassavail_upper = sum(biomassavail_upper),
-                      biomassstart = sum(biomass_mean),
-                      CPavail_grams = sum(CPavail_grams),
-                      CPavail_grams_lower = sum(CPavail_grams_lower),
-                      CPavail_grams_upper = sum(CPavail_grams_upper),
-                      carbavail_grams = sum(carbavail_grams),
-                      carbavail_grams_lower = sum(carbavail_grams_lower),
-                      carbavail_grams_upper = sum(carbavail_grams_upper)),
+                      biomassstart = sum(biomass_mean)),
                  by = Snow]
-
-
-#calculate the avg CP composition taking into account all heights
-food_pred[, CPavail_comp := CPavail_grams/biomassavail*100]
-food_pred[, CPavail_comp_lower := CPavail_grams_lower/biomassavail_lower*100]
-food_pred[, CPavail_comp_upper := CPavail_grams_upper/biomassavail_upper*100]
-
-#calc the avg carb composition
-food_pred[, carbavail_comp := carbavail_grams/biomassavail*100]
-food_pred[, carbavail_comp_lower := carbavail_grams_lower/biomassavail_lower*100]
-food_pred[, carbavail_comp_upper := carbavail_grams_upper/biomassavail_upper*100]
 
 food_pred <- food_pred[order(Snow)]
 
@@ -150,7 +116,7 @@ food_pred <- food_pred[order(Snow)]
   geom_ribbon(aes(x = Snow, ymin = prop_lower, ymax = prop_upper), alpha = 0.5, fill = "grey70", data = pred)+
   geom_path(aes(x = Snow, y = prop, color = height), linewidth = .75, data = pred)+
   scale_color_manual(values = heightcols, guide = NULL)+
-  labs(x = "Snow depth (cm)", y = "Proportion of twigs available")+
+  labs(x = "Snow depth (cm)", y = "Proportion of twigs available (PTA)")+
   facet_wrap(~height, dir = "v")+
   themepoints)
 
@@ -158,33 +124,14 @@ food_pred <- food_pred[order(Snow)]
     ggplot(food_pred)+
     geom_ribbon(aes(x = Snow, ymin = biomassavail_lower, ymax = biomassavail_upper), alpha = 0.3, color = "grey")+
     geom_line(aes(x = Snow, y = biomassavail))+
-    labs(x = "", y = "Available biomass (g/m2)")+
+    labs(x = "Snow depth (cm)", y = "Available biomass (g/m2)")+
     themepoints)
-
-(CPplot<- 
-    ggplot(food_pred)+
-    geom_ribbon(aes(x = Snow, ymin = CPavail_comp_lower, ymax = CPavail_comp_upper), alpha = 0.3, color = "grey")+
-    geom_line(aes(x = Snow, y = CPavail_comp))+
-    labs(x = "Snow depth (cm)", y = "Available CP (%)")+
-    ylim(0, 8)+
-    themepoints)
-
-(Carbplot<- 
-    ggplot(food_pred)+
-    geom_ribbon(aes(x = Snow, ymin = carbavail_comp_lower, ymax = carbavail_comp_upper), alpha = 0.3, color = "grey")+
-    geom_path(aes(x = Snow, y = carbavail_comp))+
-    labs(x = "Snow depth (cm)", y = "Available Carbohydrate (%)")+
-    ylim(37, 45)+
-    themepoints)
-
-
-fullplot <- ggarrange(biomassplot, Carbplot, ncol = 1, nrow = 2)
 
 
 
 # save predictions --------------------------------------------------------
 
-saveRDS(modout, "Output/Data/willow_avail_prediction.rds")
+saveRDS(modout, "Output/Data/05_willow_avail_prediction.rds")
 write.csv(summarytable, "Output/Tables/GAM_output_table.rds")
 ggsave("Output/Figures/Willow_avail_pred.jpeg", willow_pred, width = 5, height = 10, unit = "in")
-ggsave("Output/Figures/Total_food_avail.jpeg", fullplot, width = 5, height = 8, unit = "in")
+ggsave("Output/Figures/Total_biomass.jpeg", biomassplot, width = 5, height = 5, unit = "in")
