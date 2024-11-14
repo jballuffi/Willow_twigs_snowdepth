@@ -7,9 +7,9 @@ lapply(dir('R', '*.R', full.names = TRUE), source)
 
 # read in data ------------------------------------------------------------
 
-willow <- readRDS("Output/Data/willow_avail_noduplicates.rds")
-startingbiomass <- readRDS("Output/Data/starting_biomass_means.rds")
-startingnuts <- readRDS("Output/Data/starting_nutrition_wide.rds")
+willow <- readRDS("Output/Data/04_willow_avail_noduplicates.rds")
+startingbiomass <- readRDS("Output/Data/02_starting_biomass_means.rds")
+
 
 
 

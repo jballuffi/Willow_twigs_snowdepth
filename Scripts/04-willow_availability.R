@@ -7,7 +7,7 @@ lapply(dir('R', '*.R', full.names = TRUE), source)
 #this data is from the first count of all flags in the camera trap image
 #it is not from my field book where I logged how many twigs we flagged
 flags <- fread("Input/starting_flag_count.csv")
-cams <- readRDS("Output/Data/camtraps.rds")
+cams <- readRDS("Output/Data/03_camtraps.rds")
 
 
 
