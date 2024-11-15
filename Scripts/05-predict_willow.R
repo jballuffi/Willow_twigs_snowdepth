@@ -85,8 +85,6 @@ pred <- merge(modout, startingbiomass, by = "height", all.x = TRUE)
 #change col names
 setnames(pred, c("pred", "lower", "upper"), c("prop", "prop_lower", "prop_upper"))
 
-pred[, height := factor(height, levels = c("low", "medium", "high"))]
-
 
 
 # calculate available biomass and nutrients -------------------------------
@@ -108,6 +106,11 @@ food_pred <- food_pred[order(Snow)]
 
 
 # figures -----------------------------------------------------------------
+
+#set order of heights
+pred[, height := factor(height, levels = c("high", "medium", "low"))]
+willow[, height := factor(height, levels = c("high", "medium", "low"))]
+
 
 #plot just the gam prediction and original data for snow 0 - 90 cm
 (willow_pred <-
