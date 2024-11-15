@@ -66,7 +66,7 @@ twigs2[, c("low", "medium", "high") := .(round(low, 3), round(medium, 3), round(
 #past snow and proportions into one data column
 twigs2[, testcol := paste0(Snow, "_", low, "_", medium, "_", high)]
 
-#use seqduplicate fundtion to determine which days are just duplicates of each other
+#use seqduplicate function to determine which days are just duplicates of each other
 twigs2[, rep := divDyn::seqduplicated(testcol), .(Location, winter)]
 
 #take only non-replicated data
