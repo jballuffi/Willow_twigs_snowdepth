@@ -130,7 +130,7 @@ willow[, height := factor(height, levels = c("high", "medium", "low"))]
     ggplot(food_pred)+
     geom_ribbon(aes(x = Snow, ymin = biomassavail_lower, ymax = biomassavail_upper), alpha = 0.3, color = "grey")+
     geom_line(aes(x = Snow, y = biomassavail))+
-    labs(x = "Snow depth (cm)", y = "Available biomass (g/m2)")+
+    labs(x = "Snow depth (cm)", y = "Total willow biomass available (g/m2)")+
     themepoints)
 
 
