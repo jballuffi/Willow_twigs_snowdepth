@@ -10,10 +10,13 @@ knitr::opts_chunk$set(echo = TRUE)
 
 library(data.table)
 
+#source gam script
+source("Scripts/05-predict_willow.R")
+
 #read in data 
-biomass <- readRDS("Output/Data/cleaned_biomass.rds")
-cams <- readRDS("Output/Data/camtraps.rds")
-means <- readRDS("Output/Data/daily_meanavail_allgrids.rds")
+biomass <- readRDS("Output/Data/02_cleaned_biomass.rds")
+cams <- readRDS("Output/Data/03_camtraps.rds")
+means <- readRDS("Output/Data/04_willow_avail_daily_mean.rds")
 
 ### first section 
 
@@ -35,6 +38,8 @@ maxday23 <- means[winter == "2023-2024" & snowmean == max2324, mean(Date)]
 Transect data on average found starting willow biomass to increase with height (P = `r biomasspval`) class with average availability being `r biomass[height == "low", round(mean(Biomass), 1)]`, `r biomass[height == "medium", round(mean(Biomass), 1)]`, and `r biomass[height == "high", round(mean(Biomass), 1)]` g for the low, medium, and high heights, respectively. The maximum snow depth recorded was `r cams[, max(Snow, na.rm = TRUE)]` cm in both winters. Maximum snow depth was reached on `r maxday22` in 2022-2023 and `r maxday23` in 2023-2024. Low twigs remained 100% available until snow began to accumulate, after which medium twigs became available followed by high twigs. The maximum availability, based on daily averages, was `r means[height == "medium", round(max(propmean, na.rm = TRUE), 2)*100]`% and `r means[height == "high", round(max(propmean, na.rm = TRUE), 2)*100]`% for medium and high twigs, respectively. Low twigs became completely unavailable as winter progressed, while medium twigs became the most available proportion-wise. High twigs showed the least variation in availability, always remaining relatively less available over winter relative to other height classes.
 
 
-## Twig and nutrient availability in relation to snow depth
+## Twig and nutrient availability in response to snow depth
 
-GAMs that modeled willow availability in response to snow depth found that low twigs decreased exponentially with snow, as expected, becoming 0% available at roughly 50 cm of snow, or the maximum height of the low twig category. Medium twigs showed an inverted, quadratic response, increasing in availability up to 30 cm of snow, after which availability decreased until they became nearly 0% available after around 75 cm of snow. The availability of high twigs was the most difficult to predict. These branches were easily pushed down by snow, and then covered quickly as snow continued to accumulate. As snow melted, they would become temporarily available for a few days before springing back up when enough snow melted. As a result, high twigs rarely surpassed 50% in availability.
+GAMs that modeled willow availability in response to snow depth found that PTA behaved non-linearly in response to snow depth for all height classes (edf > 2; Table 1). Low PTA decreased exponentially with snow, as expected, becoming 0% available at roughly 50 cm of snow, or the maximum height of the low twig category (edf = `r round(sumlow$edf, 1)`, P < 0.001, R2 = `r round(sumlow$r.sq, 2)`). Medium twigs showed an inverted, quadratic response, increasing in availability up to `r pred[height == "medium" & Snow == 30, round(prop*100)]`% at 30 cm of snow, after which availability decreased until they became nearly 0% available after around 75 cm of snow (edf = `r round(summed$edf, 1)`, R2 = `r round(summed$r.sq, 2)`). High PTA was the most difficult to predict (R2 = `r round(sumhigh$r.sq, 2)`). These branches were easily pushed down by snow, and then covered quickly as snow continued to accumulate. As snow melted, they would become temporarily available for a few days before springing back to > 1 m when enough snow melted (edf = `r round(sumhigh$edf, 1)`). As a result, high twigs rarely surpassed 50% in availability.
+
+After we converted predictions for PTAs to total available biomass (g/m2), our findings matched our predictions. We found that from zero to 90 cm of snow, the total biomass of willow available to hares decreased from `r food_pred[Snow == 0, round(biomassavail, 1)]` to `r food_pred[Snow == max(Snow), round(biomassavail, 1)]` g/m2. However, this trend was very non-linear; available biomass peaked at mid ranges of snow, as we predicted. Specifically, we found that as snow increased from 0 to 10 cm available biomass increased by `r round((food_pred[Snow == 10, biomassavail] - food_pred[Snow == 0, biomassavail])/food_pred[Snow == 0, biomassavail]*100, 1)`% of what was available pre-snow, up to `r food_pred[Snow == max(Snow), round(biomassavail, 1)]`g/m2. Available biomass remained high until 30 cm after which it declined steadily until the maxmimum snow depth.
