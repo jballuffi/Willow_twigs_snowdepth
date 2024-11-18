@@ -103,6 +103,9 @@ food_pred <- pred[, .(biomassavail = sum(biomassavail),
 
 food_pred <- food_pred[order(Snow)]
 
+#in cases where lower limit goes below 0, keep at 0
+food_pred[biomassavail_lower < 0, biomassavail_lower := 0]
+
 
 
 # figures -----------------------------------------------------------------
