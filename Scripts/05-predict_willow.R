@@ -137,7 +137,10 @@ willow[, height := factor(height, levels = c("high", "medium", "low"))]
 
 # save predictions --------------------------------------------------------
 
+saveRDS(food_pred, "Output/Data/05_willow_biomass_prediction.rds")
 saveRDS(modout, "Output/Data/05_willow_avail_prediction.rds")
+
 write.csv(summarytable, "Output/Tables/GAM_output_table.rds")
+
 ggsave("Output/Figures/Willow_avail_pred.jpeg", willow_pred, width = 5, height = 10, unit = "in")
 ggsave("Output/Figures/Total_biomass.jpeg", biomassplot, width = 5, height = 5, unit = "in")
