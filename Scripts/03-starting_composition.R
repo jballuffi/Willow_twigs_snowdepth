@@ -12,23 +12,19 @@ nuts <- fread("Input/Plant_nutrition.csv")
 
 # prep variable names  -------------------------------------------
 
-#create species column with sample id
-nuts[grep("S", Sample), Species := "spruce"]
-nuts[grep("W", Sample), Species := "willow"]
+#pull just willow
+willow <- nuts[grep("W", Sample)]
 
 #create height column with sample id
-nuts[grep("L", Sample), Height := "low"]
-nuts[grep("M", Sample), Height := "medium"]
-nuts[grep("H", Sample), Height := "high"]
-
-#take only willow
-willow <- nuts[Species == "willow"]
+willow[grep("L", Sample), Height := "low"]
+willow[grep("M", Sample), Height := "medium"]
+willow[grep("H", Sample), Height := "high"]
 
 #subset to main variables
 wide <- willow[, .(Height, Grid, Loc, CP_F, NDF_F, ADF_F, ADL_F)]
 
-#What is not protein or fibre should just be carb
-wide[, Carb_F := 100 - (NDF_F + CP_F)]
+#calculate Neutral deterfent soluble yield 
+wide[, NDS_F := 100 - NDF_F]
 
 #change name
 setnames(wide, "Height", "height")
@@ -41,7 +37,7 @@ wide[, height := factor(height, levels = c("low", "medium", "high"), ordered = T
 # make data long ----------------------------
 
 #create a melted version of nutrient data, melted by nutrient
-long <- melt.data.table(wide, measure.vars = c("NDF_F", "ADF_F", "ADL_F", "CP_F", "Carb_F"), variable.name = "Nutrient", value.name = "Percent")
+long <- melt.data.table(wide, measure.vars = c("CP_F", "NDF_F", "NDS_F"), variable.name = "Nutrient", value.name = "Percent")
 
 #rename nutrients for figures
 long[, Nutrient := gsub("_F", "", Nutrient)]
@@ -54,40 +50,50 @@ long[, Composition := Percent/100]
 
 
 
-# Summarize data  ------------------------------
+# Look at nutrient trends by height ------------------------------
 
 #figure to look at difference between height classes
 (allnuts <- 
     ggplot(long)+
-    geom_boxplot(aes(x = height, y = Percent, fill = height), alpha = 0.4)+
+    geom_boxplot(aes(x = height, y = Percent, fill = height), alpha = 0.4, width = .5)+
     labs(y = "Composition (%)", x = "Browse height")+
     scale_fill_manual(values = heightcols, guide = NULL)+
     themepoints+
-    facet_wrap(~ Nutrient, scales = "free", dir = "v"))
+    facet_wrap(~ Nutrient, scales = "free", dir = "h"))
 
 #min and max of plant compositions
 long[, .(min = min(Percent), max = max(Percent)), by = Nutrient]
+
+#density for NDS
+ggplot()+
+  geom_density(aes(x = Composition, fill = height, color = height), alpha = .3, data = long[Nutrient == "NDS"])+
+  scale_fill_manual(values = heightcols)+
+  scale_color_manual(values = heightcols)+
+  labs(x = "NDS composition (%)")+
+  themepoints
 
 
 
 # Get final summary by height class ---------------------------------------
 
 #create data table of means, medians, and standard deviations for %CP by species and height
-meanslong <- long[, .(mean = mean(Composition),
-                      median = median(Composition),
-                      sd = sd(Composition)), 
+meanslong <- long[, .(mean = round(mean(Composition), 3),
+                      median = round(median(Composition), 3),
+                      sd = round(sd(Composition), 3)), 
                  by = .(height, Nutrient)]
 
 
-meanswide <- wide[, .(mean_cp = mean(CP_F/100, na.rm = TRUE),
-                      mean_carb = mean(Carb_F/100, na.rm = TRUE),
-                      mean_ndf = mean(NDF_F/100, na.rm = TRUE)),
+meanswide <- wide[, .(mean_cp = round(mean(CP_F/100, na.rm = TRUE), 2),
+                      mean_nds = round(mean(NDS_F/100, na.rm = TRUE), 2),
+                      mean_ndf = round(mean(NDF_F/100, na.rm = TRUE), 2)),
                   height]
+
+
 
 # save outputs ------------------------------------------------------------
 
 saveRDS(meanslong, "Output/Data/starting_nutrition_long.rds")
 saveRDS(meanswide, "Output/Data/starting_nutrition_wide.rds")
 saveRDS(long, "Output/Data/cleaned_compositions.rds")
-ggsave("Output/Figures/composition_by_height.jpeg", allnuts, width = 6, height = 10, unit = "in")
+ggsave("Output/Figures/composition_by_height.jpeg", allnuts, width = 8, height = 5, unit = "in")
 
