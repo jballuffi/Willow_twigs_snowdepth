@@ -3,7 +3,7 @@
 lapply(dir('R', '*.R', full.names = TRUE), source)
 
 
-source("Scripts/01-allometric_eqn.R")
+source("Scripts/00-allometric_eqn.R")
 biomass <- fread("Input/transects.csv")
 
 #number of transects done
