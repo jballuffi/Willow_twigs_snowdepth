@@ -167,7 +167,7 @@ fullplot <- ggarrange(biomassplot, NDSplot, ncol = 1, nrow = 2)
 
 # save predictions --------------------------------------------------------
 
-saveRDS(food_pred, "Output/Data/05_willow_biomass_prediction.rds")
+saveRDS(food_pred, "Output/Data/05_willow_prediction.rds")
 saveRDS(modout, "Output/Data/05_willow_avail_prediction.rds")
 
 write.csv(summarytable, "Output/Tables/GAM_output_table.rds")
