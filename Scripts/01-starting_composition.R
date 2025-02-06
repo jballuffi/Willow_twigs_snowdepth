@@ -92,8 +92,8 @@ meanswide <- wide[, .(mean_cp = round(mean(CP_F/100, na.rm = TRUE), 2),
 
 # save outputs ------------------------------------------------------------
 
-saveRDS(meanslong, "Output/Data/starting_nutrition_long.rds")
-saveRDS(meanswide, "Output/Data/starting_nutrition_wide.rds")
-saveRDS(long, "Output/Data/cleaned_compositions.rds")
+saveRDS(meanslong, "Output/Data/01_starting_nutrition_long.rds")
+saveRDS(meanswide, "Output/Data/01_starting_nutrition_wide.rds")
+saveRDS(long, "Output/Data/01_cleaned_compositions.rds")
 ggsave("Output/Figures/composition_by_height.jpeg", allnuts, width = 8, height = 5, unit = "in")
 
