@@ -9,7 +9,7 @@ lapply(dir('R', '*.R', full.names = TRUE), source)
 
 willow <- readRDS("Output/Data/04_willow_avail_noduplicates.rds")
 startingbiomass <- readRDS("Output/Data/02_starting_biomass_means.rds")
-startingnuts <- readRDS("Output/Data/starting_nutrition_wide.rds")
+startingnuts <- readRDS("Output/Data/01_starting_nutrition_wide.rds")
 
 
 
@@ -136,7 +136,7 @@ willow[, height := factor(height, levels = c("high", "medium", "low"))]
 #plot just the gam prediction and original data for snow 0 - 90 cm
 (willow_pred <-
     ggplot()+
-    geom_point(aes(x = Snow, y = propavail_willow), alpha = 0.5, color = "grey50", data = willow)+
+    geom_point(aes(x = Snow, y = propavail_willow), alpha = 0.3, color = "grey50", data = willow)+
     geom_ribbon(aes(x = Snow, ymin = prop_lower, ymax = prop_upper), alpha = 0.5, fill = "grey70", data = pred)+
     geom_path(aes(x = Snow, y = prop, color = height), linewidth = .75, data = pred)+
     scale_color_manual(values = heightcols, guide = NULL)+
