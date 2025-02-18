@@ -72,7 +72,7 @@ meanswide <- wide[, .(mean_cp = round(mean(CP_F/100, na.rm = TRUE), 2),
 
 #figure to look at difference between height classes
 (allnuts <- 
-    ggplot(long)+
+    ggplot(long[Nutrient == "CP" | Nutrient == "NDS"])+
     geom_boxplot(aes(x = height, y = Percent, fill = height), alpha = 0.4, width = .5)+
     labs(y = "Composition (%)", x = "Browse height")+
     scale_fill_manual(values = heightcols, guide = NULL)+
@@ -83,8 +83,8 @@ meanswide <- wide[, .(mean_cp = round(mean(CP_F/100, na.rm = TRUE), 2),
 long[, .(min = min(Percent), max = max(Percent)), by = Nutrient]
 
 #density for NDS
-ggplot()+
-  geom_density(aes(x = Composition, fill = height, color = height), alpha = .3, data = long[Nutrient == "NDS"])+
+ggplot(data = long[Nutrient == "NDS"])+
+  geom_density(aes(x = Composition, fill = height, color = height), alpha = .3)+
   scale_fill_manual(values = heightcols)+
   scale_color_manual(values = heightcols)+
   labs(x = "NDS composition (%)")+
@@ -99,5 +99,5 @@ ggplot()+
 saveRDS(meanslong, "Output/Data/01_starting_nutrition_long.rds")
 saveRDS(meanswide, "Output/Data/01_starting_nutrition_wide.rds")
 saveRDS(long, "Output/Data/01_cleaned_compositions.rds")
-ggsave("Output/Figures/composition_by_height.jpeg", allnuts, width = 8, height = 5, unit = "in")
+ggsave("Output/Figures/composition_by_height.jpeg", allnuts, width = 5, height = 5, unit = "in")
 
