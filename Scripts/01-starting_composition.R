@@ -50,6 +50,24 @@ long[, Composition := Percent/100]
 
 
 
+# Get final summary by height class ---------------------------------------
+
+#create data table of means, medians, and standard deviations for %CP by species and height
+meanslong <- long[, .(mean = round(mean(Composition), 3),
+                      median = round(median(Composition), 3),
+                      sd = round(sd(Composition), 3),
+                      upper_quant = round(quantile(Composition, prob = .75), 3),
+                      lower_quant = round(quantile(Composition, prob = 0.25), 3)), 
+                  by = .(height, Nutrient)]
+
+
+meanswide <- wide[, .(mean_cp = round(mean(CP_F/100, na.rm = TRUE), 2),
+                      mean_nds = round(mean(NDS_F/100, na.rm = TRUE), 2),
+                      mean_ndf = round(mean(NDF_F/100, na.rm = TRUE), 2)),
+                  height]
+
+
+
 # Look at nutrient trends by height ------------------------------
 
 #figure to look at difference between height classes
@@ -73,20 +91,6 @@ ggplot()+
   themepoints
 
 
-
-# Get final summary by height class ---------------------------------------
-
-#create data table of means, medians, and standard deviations for %CP by species and height
-meanslong <- long[, .(mean = round(mean(Composition), 3),
-                      median = round(median(Composition), 3),
-                      sd = round(sd(Composition), 3)), 
-                 by = .(height, Nutrient)]
-
-
-meanswide <- wide[, .(mean_cp = round(mean(CP_F/100, na.rm = TRUE), 2),
-                      mean_nds = round(mean(NDS_F/100, na.rm = TRUE), 2),
-                      mean_ndf = round(mean(NDF_F/100, na.rm = TRUE), 2)),
-                  height]
 
 
 
