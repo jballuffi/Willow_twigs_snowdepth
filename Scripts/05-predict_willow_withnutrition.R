@@ -144,24 +144,39 @@ willow[, height := factor(height, levels = c("high", "medium", "low"))]
     facet_wrap(~height, dir = "v")+
     themepoints)
 
-#plot prediction for total biomass 
+
+
+# make final predictions summing all height classes --------------------------------------------------
+
+#total biomass 
 (biomassplot <- 
     ggplot(food_pred)+
     geom_ribbon(aes(x = Snow, ymin = biomassavail_lower, ymax = biomassavail_upper), alpha = 0.3, color = "grey")+
     geom_line(aes(x = Snow, y = biomassavail))+
-    labs(x = "Snow depth (cm)", y = "Total willow biomass available (g/m2)")+
+    labs(x = " " , y = "Total biomass (g/m2)")+
     themepoints)
 
+#solubility %
 (NDSplot<- 
     ggplot(food_pred)+
     geom_ribbon(aes(x = Snow, ymin = NDSavail_comp_lower, ymax = NDSavail_comp_upper), alpha = 0.3, color = "grey")+
     geom_path(aes(x = Snow, y = NDSavail_comp))+
-    labs(x = "Snow depth (cm)", y = "Mean solubility (NDS; %)")+
+    labs(x = " ", y = "Solubility (NDS; %)")+
     ylim(min(food_pred$NDSavail_comp - 0.5), max(food_pred$NDSavail_comp + 0.5))+
     themepoints)
 
+#soluble biomass
+(NDSmassplot <- 
+    ggplot(food_pred)+
+    geom_ribbon(aes(x = Snow, ymin = NDSavail_grams_lower, ymax = NDSavail_grams_upper), alpha = 0.3, color = "grey")+
+    geom_line(aes(x = Snow, y = NDSavail_grams))+
+    labs(x = "Snow depth (cm)", y = "Soluble biomass (NDS; g/m2)")+
+    themepoints)
 
-fullplot <- ggarrange(biomassplot, NDSplot, ncol = 1, nrow = 2)
+
+
+
+fullplot <- ggarrange(biomassplot, NDSplot, NDSmassplot, ncol = 1, nrow = 3)
 
 
 
@@ -172,5 +187,5 @@ saveRDS(modout, "Output/Data/05_willow_avail_prediction.rds")
 
 write.csv(summarytable, "Output/Tables/GAM_output_table.rds")
 
-ggsave("Output/Figures/Willow_avail_pred.jpeg", willow_pred, width = 5, height = 10, unit = "in")
-ggsave("Output/Figures/Total_food_avail.jpeg", fullplot, width = 5, height = 8, unit = "in")
+ggsave("Output/Figures/Willow_avail_pred.jpeg", willow_pred, width = 4, height = 10, unit = "in")
+ggsave("Output/Figures/Total_food_avail.jpeg", fullplot, width = 4, height = 10, unit = "in")
