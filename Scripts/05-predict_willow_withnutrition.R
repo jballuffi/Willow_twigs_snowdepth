@@ -128,8 +128,10 @@ food_pred <- food_pred[order(Snow)]
 #make linear prediction based on the values at 0 and 75 cm
 val0 <- food_pred[Snow == 0, biomassavail]
 val75 <- food_pred[Snow == 75, biomassavail]
-
 linearslope <- (val0 - val75)/(0 - 75)
+
+#add a column for the linear prediction for biomass based on 0 and 75 cm values
+food_pred[, linear_biomass_pred := val0 + linearslope*Snow]
 
 
 
@@ -159,7 +161,7 @@ willow[, height := factor(height, levels = c("high", "medium", "low"))]
     ggplot(food_pred)+
     geom_ribbon(aes(x = Snow, ymin = biomassavail_lower, ymax = biomassavail_upper), alpha = 0.3, color = "grey")+
     geom_line(aes(x = Snow, y = biomassavail))+
-    geom_abline(aes(intercept = val0, slope = linearslope), linetype = 3)+
+    geom_line(aes(x = Snow, y = linear_biomass_pred), linetype = 3)+
     labs(x = " " , y = "Total biomass (g/m2)", subtitle = "A)")+
     themepoints)
 
