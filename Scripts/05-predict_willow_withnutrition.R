@@ -133,6 +133,9 @@ linearslope <- (val0 - val75)/(0 - 75)
 #add a column for the linear prediction for biomass based on 0 and 75 cm values
 food_pred[, linear_biomass_pred := val0 + linearslope*Snow]
 
+#look at the difference when we predict max biomass
+food_pred[Snow == 27, (biomassavail- linear_biomass_pred)/biomassavail]
+food_pred[Snow == 27, biomassavail]
 
 
 # figures -----------------------------------------------------------------
