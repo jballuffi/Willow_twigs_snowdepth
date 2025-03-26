@@ -125,6 +125,12 @@ food_pred[, NDSavail_comp_upper := NDSavail_grams_upper/biomassavail_upper*100]
 
 food_pred <- food_pred[order(Snow)]
 
+#make linear prediction based on the values at 0 and 75 cm
+val0 <- food_pred[Snow == 0, biomassavail]
+val75 <- food_pred[Snow == 75, biomassavail]
+
+linearslope <- (val0 - val75)/(0 - 75)
+
 
 
 # figures -----------------------------------------------------------------
@@ -153,6 +159,7 @@ willow[, height := factor(height, levels = c("high", "medium", "low"))]
     ggplot(food_pred)+
     geom_ribbon(aes(x = Snow, ymin = biomassavail_lower, ymax = biomassavail_upper), alpha = 0.3, color = "grey")+
     geom_line(aes(x = Snow, y = biomassavail))+
+    geom_abline(aes(intercept = val0, slope = linearslope), linetype = 3)+
     labs(x = " " , y = "Total biomass (g/m2)")+
     themepoints)
 
@@ -173,10 +180,20 @@ willow[, height := factor(height, levels = c("high", "medium", "low"))]
     labs(x = "Snow depth (cm)", y = "Soluble biomass (NDS; g/m2)")+
     themepoints)
 
-
-
-
 fullplot <- ggarrange(biomassplot, NDSplot, NDSmassplot, ncol = 1, nrow = 3)
+
+
+
+# figure for conceptual diagram -------------------------------------------
+
+#total biomass 
+(biomassplotconceptual <- 
+   ggplot(food_pred)+
+   geom_ribbon(aes(x = Snow, ymin = biomassavail_lower, ymax = biomassavail_upper), alpha = 0.3, color = "grey")+
+   geom_line(aes(x = Snow, y = biomassavail))+
+   labs(x = "Snow depth (cm)" , y = "Available willow (g/m2)")+
+   theme_pubr(base_size = 16))
+
 
 
 
@@ -189,3 +206,5 @@ write.csv(summarytable, "Output/Tables/GAM_output_table.rds")
 
 ggsave("Output/Figures/Willow_avail_pred.jpeg", willow_pred, width = 4, height = 10, unit = "in")
 ggsave("Output/Figures/Total_food_avail.jpeg", fullplot, width = 4, height = 10, unit = "in")
+
+ggsave("Output/Figures/conceptual_biomass.jpeg", biomassplotconceptual, width = 6, height = 5, unit = "in")
