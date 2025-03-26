@@ -160,7 +160,7 @@ willow[, height := factor(height, levels = c("high", "medium", "low"))]
     geom_ribbon(aes(x = Snow, ymin = biomassavail_lower, ymax = biomassavail_upper), alpha = 0.3, color = "grey")+
     geom_line(aes(x = Snow, y = biomassavail))+
     geom_abline(aes(intercept = val0, slope = linearslope), linetype = 3)+
-    labs(x = " " , y = "Total biomass (g/m2)")+
+    labs(x = " " , y = "Total biomass (g/m2)", subtitle = "A)")+
     themepoints)
 
 #solubility %
@@ -168,7 +168,7 @@ willow[, height := factor(height, levels = c("high", "medium", "low"))]
     ggplot(food_pred)+
     geom_ribbon(aes(x = Snow, ymin = NDSavail_comp_lower, ymax = NDSavail_comp_upper), alpha = 0.3, color = "grey")+
     geom_path(aes(x = Snow, y = NDSavail_comp))+
-    labs(x = " ", y = "Solubility (NDS; %)")+
+    labs(x = " ", y = "Solubility (NDS; %)", subtitle = "B)")+
     ylim(min(food_pred$NDSavail_comp - 0.5), max(food_pred$NDSavail_comp + 0.5))+
     themepoints)
 
@@ -177,7 +177,7 @@ willow[, height := factor(height, levels = c("high", "medium", "low"))]
     ggplot(food_pred)+
     geom_ribbon(aes(x = Snow, ymin = NDSavail_grams_lower, ymax = NDSavail_grams_upper), alpha = 0.3, color = "grey")+
     geom_line(aes(x = Snow, y = NDSavail_grams))+
-    labs(x = "Snow depth (cm)", y = "Soluble biomass (NDS; g/m2)")+
+    labs(x = "Snow depth (cm)", y = "Soluble biomass (NDS; g/m2)", subtitle = "C)")+
     themepoints)
 
 fullplot <- ggarrange(biomassplot, NDSplot, NDSmassplot, ncol = 1, nrow = 3)
