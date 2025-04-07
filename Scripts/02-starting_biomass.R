@@ -89,7 +89,7 @@ avg_nogrid <- heights[, .(biomass_mean = mean(Biomass),
   geom_boxplot(aes(x = Grid, y = Biomass, fill = height), alpha = 0.5, color = "grey30")+
   scale_fill_manual(values = heightcols)+
   labs(x = "Grid", y = "Available forage (dry g/m2)")+
-  themepoints)
+  themethesistop)
 
 
 

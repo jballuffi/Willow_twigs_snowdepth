@@ -153,7 +153,7 @@ willow[, height := factor(height, levels = c("high", "medium", "low"))]
     scale_color_manual(values = heightcols, guide = NULL)+
     labs(x = "Snow depth (cm)", y = "Proportion of twigs available (PTA)")+
     facet_wrap(~height, dir = "v")+
-    themepoints)
+    themethesisright)
 
 
 
@@ -165,25 +165,25 @@ willow[, height := factor(height, levels = c("high", "medium", "low"))]
     geom_ribbon(aes(x = Snow, ymin = biomassavail_lower, ymax = biomassavail_upper), alpha = 0.3, color = "grey")+
     geom_line(aes(x = Snow, y = biomassavail))+
     geom_line(aes(x = Snow, y = linear_biomass_pred), linetype = 3)+
-    labs(x = " " , y = "Total biomass (g/m2)", subtitle = "A)")+
-    themepoints)
+    labs(x = " " , y = expression(Total~biomass~(NDS~g/m^2)), subtitle = "A)")+
+    themethesisright)
 
 #solubility %
 (NDSplot<- 
     ggplot(food_pred)+
     geom_ribbon(aes(x = Snow, ymin = NDSavail_comp_lower, ymax = NDSavail_comp_upper), alpha = 0.3, color = "grey")+
     geom_path(aes(x = Snow, y = NDSavail_comp))+
-    labs(x = " ", y = "Solubility (NDS; %)", subtitle = "B)")+
+    labs(x = " ", y = "Solubility (NDS %)", subtitle = "B)")+
     ylim(min(food_pred$NDSavail_comp - 0.5), max(food_pred$NDSavail_comp + 0.5))+
-    themepoints)
+    themethesisright)
 
 #soluble biomass
 (NDSmassplot <- 
     ggplot(food_pred)+
     geom_ribbon(aes(x = Snow, ymin = NDSavail_grams_lower, ymax = NDSavail_grams_upper), alpha = 0.3, color = "grey")+
     geom_line(aes(x = Snow, y = NDSavail_grams))+
-    labs(x = "Snow depth (cm)", y = "Soluble biomass (NDS; g/m2)", subtitle = "C)")+
-    themepoints)
+    labs(x = "Snow depth (cm)", y = expression(Soluble~biomass~(NDS~g/m^2)), subtitle = "C)")+
+    themethesisright)
 
 fullplot <- ggarrange(biomassplot, NDSplot, NDSmassplot, ncol = 1, nrow = 3)
 
@@ -196,7 +196,7 @@ fullplot <- ggarrange(biomassplot, NDSplot, NDSmassplot, ncol = 1, nrow = 3)
    ggplot(food_pred)+
    geom_ribbon(aes(x = Snow, ymin = biomassavail_lower, ymax = biomassavail_upper), alpha = 0.3, color = "grey")+
    geom_line(aes(x = Snow, y = biomassavail))+
-   labs(x = "Snow depth (cm)" , y = "Available willow (g/m2)")+
+   labs(x = "Snow depth (cm)" , y = expression(Available~willow~(g/m^2)))+
    theme_pubr(base_size = 16))
 
 
