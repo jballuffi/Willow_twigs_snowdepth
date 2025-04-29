@@ -73,7 +73,7 @@ meanswide <- wide[, .(mean_cp = round(mean(CP_F/100, na.rm = TRUE), 2),
 #figure to look at difference between height classes
 (allnuts <- 
     ggplot(long[Nutrient == "CP" | Nutrient == "NDS"])+
-    geom_boxplot(aes(x = height, y = Percent, fill = height), alpha = 0.4, width = .5)+
+    geom_boxplot(aes(x = height, y = Percent, fill = height), outlier.shape = NA, alpha = 0.4, width = .5)+
     labs(y = "Composition (%)", x = "Browse height")+
     scale_fill_manual(values = heightcols, guide = NULL)+
     facet_wrap(~ Nutrient, scales = "free", dir = "h")+

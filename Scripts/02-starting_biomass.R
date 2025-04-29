@@ -86,9 +86,10 @@ avg_nogrid <- heights[, .(biomass_mean = mean(Biomass),
 
 #summary figure showing 
 (summary <- ggplot(heights)+
-  geom_boxplot(aes(x = Grid, y = Biomass, fill = height), alpha = 0.5, color = "grey30")+
-  scale_fill_manual(values = heightcols)+
-  labs(x = "Grid", y = "Available forage (dry g/m2)")+
+  geom_boxplot(aes(x = height, y = Biomass, fill = height), outlier.shape = NA, alpha = 0.5, color = "grey30")+
+  scale_fill_manual(values = heightcols, guide = NULL)+
+  labs(x = "Height class", y = "Biomass (dry g/m2)")+
+  ylim(0, 45)+
   themethesistop)
 
 
@@ -97,4 +98,4 @@ avg_nogrid <- heights[, .(biomass_mean = mean(Biomass),
 
 saveRDS(heights, "Output/Data/02_cleaned_biomass.rds")
 saveRDS(avg_nogrid, "Output/Data/02_starting_biomass_means.rds")
-ggsave("Output/Figures/sum_starting_biomass.jpeg", summary, width = 7, height = 5, unit = "in")
+ggsave("Output/Figures/sum_starting_biomass.jpeg", summary, width = 5, height = 4, unit = "in")
