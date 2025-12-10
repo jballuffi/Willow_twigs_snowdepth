@@ -133,13 +133,18 @@ food_pred <- pred[, .(biomassavail = sum(biomassavail),
                       NDSavail_grams_upper = sum(NDSavail_grams_upper)),
                  by = Snow]
 
+#order by snow depth
+food_pred <- food_pred[order(Snow)]
+
+#calculate the proportion of willow biomass that is available
+food_pred[, propavail := biomassavail/biomassstart]
+food_pred[, propavail_lower := biomassavail_lower/biomassstart]
+food_pred[, propavail_upper := biomassavail_upper/biomassstart]
 
 #calculate the avg CP composition taking into account all heights
 food_pred[, NDSavail_comp := NDSavail_grams/biomassavail*100]
 food_pred[, NDSavail_comp_lower := NDSavail_grams_lower/biomassavail_lower*100]
 food_pred[, NDSavail_comp_upper := NDSavail_grams_upper/biomassavail_upper*100]
-
-food_pred <- food_pred[order(Snow)]
 
 #make linear prediction based on the values at 0 and 75 cm
 val0 <- food_pred[Snow == 0, biomassavail]
@@ -168,7 +173,7 @@ willow[, height := factor(height, levels = c("high", "medium", "low"))]
     geom_path(aes(x = Snow, y = prop, color = height), linewidth = .75, data = pred)+
     scale_color_manual(values = heightcols, guide = NULL)+
     labs(x = "Snow depth (cm)", y = "Proportion of twigs available (PTA)")+
-    facet_wrap(~height, dir = "v")+
+    facet_wrap(~height, nrow = 3, ncol = 1)+
     themethesisright)
 
 
@@ -201,7 +206,17 @@ willow[, height := factor(height, levels = c("high", "medium", "low"))]
     labs(x = "Snow depth (cm)", y = expression(Soluble~biomass~(NDS~g/m^2)), subtitle = "C)")+
     themethesisright)
 
-fullplot <- ggarrange(biomassplot, NDSplot, NDSmassplot, ncol = 1, nrow = 3)
+#proportion of biomass
+(propavailplot <- 
+    ggplot(food_pred)+
+    geom_ribbon(aes(x = Snow, ymin = propavail_lower, ymax = propavail_upper), alpha = 0.3, color = "grey")+
+    geom_line(aes(x = Snow, y = propavail))+
+    labs(x = "Snow depth (cm)", y = "Proportion available", subtitle = "D)")+
+    themethesisright)
+
+
+
+fullplot <- ggarrange(biomassplot, NDSplot, NDSmassplot, propavailplot, ncol = 2, nrow = 2)
 
 
 
@@ -226,6 +241,6 @@ saveRDS(modout, "Output/Data/05_willow_avail_prediction.rds")
 write.csv(summarytable, "Output/Tables/GAM_output_table.rds")
 
 ggsave("Output/Figures/Willow_avail_pred.jpeg", willow_pred, width = 4, height = 10, unit = "in")
-ggsave("Output/Figures/Total_food_avail.jpeg", fullplot, width = 4, height = 10, unit = "in")
+ggsave("Output/Figures/Total_food_avail.jpeg", fullplot, width = 10, height = 10, unit = "in")
 
 ggsave("Output/Figures/conceptual_biomass.jpeg", biomassplotconceptual, width = 6, height = 5, unit = "in")
