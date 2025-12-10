@@ -18,6 +18,12 @@ startingnuts <- readRDS("Output/Data/01_starting_nutrition_wide.rds")
 #write gam for low height class
 lowgam <- gam(propavail_willow ~ s(Snow) + 1, data = willow[height == "low"])
 sumlow <- summary(lowgam)
+summary(lowgam)$p.table
+k.check(lowgam)
+gam.check(lowgam)
+lowres <- abs(resid(lowgam))
+lag.plot(lowres)
+
 
 #make s-table, and indicate model, this is for variable stuff
 sumslow <- as.data.table(round((sumlow$s.table), 4))
@@ -28,6 +34,12 @@ sumslow[, `Dev. Explained` := round(sumlow$dev.expl, 1)]
 #gam for medium height class
 medgam <- gam(propavail_willow ~ s(Snow), data = willow[height == "medium"])
 summed <- summary(medgam)
+summary(medgam)$p.table
+k.check(medgam)
+gam.check(medgam)
+medres <- resid(medgam)
+lag.plot(medres)
+
 
 #make s-table, and indicate model, this is for variable stuff
 sumsmed <- as.data.table(round((summed$s.table), 4))
@@ -38,6 +50,10 @@ sumsmed[, `Dev. Explained` := round(summed$dev.expl, 1)]
 #gam for high height class
 highgam <- gam(propavail_willow ~ s(Snow), data = willow[height == "high"])
 sumhigh <- summary(highgam)
+summary(highgam)$p.table
+k.check(highgam)
+gam.check(highgam)
+
 
 #make s-table, and indicate model, this is for variable stuff
 sumshigh <- as.data.table(round((sumhigh$s.table), 4))
