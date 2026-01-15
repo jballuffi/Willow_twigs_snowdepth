@@ -24,7 +24,7 @@ cams <- rbindlist(camdat, use.names = FALSE, idcol = "winter")
 
 #re-assign the winter column based on directory name
 cams[, winter := factor(winter, labels = dirname(camfiles))]
-cams[, winter := tstrsplit(winter, "//", keep = 2)]
+cams[, winter := tstrsplit(winter, "/", keep = 3)]
 
 
 
